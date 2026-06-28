@@ -1,0 +1,13 @@
+# ── Copy this file and rename it to .env ──────────────────────────────────
+# Then fill in your real values below
+# NEVER rename the original — keep .env.example in git as a template
+
+# Your HuggingFace username (visible in your HF profile URL)
+HF_USERNAME=your-huggingface-username
+
+# HuggingFace token — only needed if your models are private repos
+# Get one at: https://huggingface.co/settings/tokens
+HF_TOKEN=your-hf-token-here
+
+# Groq API key — get one free at: https://console.groq.com
+GROQ_API_KEY=your-groq-api-key-here
