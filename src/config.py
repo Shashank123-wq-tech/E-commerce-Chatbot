@@ -1,5 +1,5 @@
 """
-config.py — Central configuration for all models and settings.
+Config.py — Central Configuration for all models and settings.
 Update HF_USERNAME and model repo names to match your HuggingFace uploads.
 """
 
