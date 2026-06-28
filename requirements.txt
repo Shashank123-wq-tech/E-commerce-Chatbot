@@ -1,6 +1,9 @@
 # Streamlit
 streamlit>=1.35.0
 
+# Numpy — must be installed before torch
+numpy==1.26.4
+
 # PyTorch CPU only (Streamlit Cloud has no GPU)
 --extra-index-url https://download.pytorch.org/whl/cpu
 torch==2.2.0+cpu
