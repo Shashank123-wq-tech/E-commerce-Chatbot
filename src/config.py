@@ -35,6 +35,7 @@ def _secret(key: str, default: str = "") -> str:
     except Exception:
         return os.getenv(key, default)
 
+config = Config()
 
 @dataclass
 class Config:
@@ -66,3 +67,5 @@ class Config:
     APP_TITLE:   str = "AI Powered Chatbot"
     APP_ICON:    str = "🤖"
     MAX_HISTORY: int = 20
+
+Config = Config()    
