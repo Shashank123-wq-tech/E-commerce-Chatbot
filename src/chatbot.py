@@ -88,4 +88,4 @@ class ChatBot:
     @staticmethod
     def _trim_history(history: list[dict]) -> list[dict]:
         """Keep only the last MAX_HISTORY messages to stay within context window."""
-        return history[-(config.MAX_HISTORY):]
+        return history[-(Config.MAX_HISTORY):]
