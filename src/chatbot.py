@@ -17,7 +17,7 @@ from src.prompt_builder import build_from_text
 from src.groq_client import stream_response, get_response
 from src.ner import extract_entities, Entity
 from src.sentiment import SentimentResult
-from src.config import config
+from src.config import Config
 
 
 @dataclass
