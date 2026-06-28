@@ -25,6 +25,15 @@ def _pipeline_device() -> int:
     dev = _get_device()
     return 0 if dev in ("cuda", "mps") else -1
 
+def _secret(key: str, default: str = "") -> str:
+    try:
+        import streamlit as st
+        if key in st.secrets:
+            return st.secrets[key]       # access like a dict, not callable
+        return os.getenv(key, default)
+    except Exception:
+        return os.getenv(key, default)
+
 
 @dataclass
 class Config:

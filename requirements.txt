@@ -1,16 +1,20 @@
-# ── Streamlit ──────────────────────────────────────────────────────────────────
+# Streamlit
 streamlit>=1.35.0
 
-# ── HuggingFace ecosystem ─────────────────────────────────────────────────────
-torch>=2.2.0
-transformers>=4.40.0
-huggingface_hub>=0.23.0        # HF login, model download, caching
-accelerate>=0.30.0             # float16 model loading
-tokenizers>=0.19.0             # fast Rust tokenizers
-sentencepiece>=0.2.0           # needed by many tokenizers
+# PyTorch CPU only (Streamlit Cloud has no GPU)
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.2.0+cpu
+torchvision==0.17.0+cpu
 
-# ── Groq LLM ─────────────────────────────────────────────────────────────────
+# HuggingFace
+transformers==4.40.0
+huggingface_hub>=0.23.0
+accelerate>=0.30.0
+tokenizers>=0.19.0
+sentencepiece>=0.2.0
+
+# Groq
 groq>=0.9.0
 
-# ── Utilities ─────────────────────────────────────────────────────────────────
-python-dotenv>=1.0.0           # loads .env locally
+# Utilities
+python-dotenv>=1.0.0
