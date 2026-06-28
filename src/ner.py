@@ -9,7 +9,6 @@ Key optimisations:
 """
 
 from __future__ import annotations
-
 import streamlit as st
 import torch
 from dataclasses import dataclass
@@ -18,7 +17,6 @@ from transformers import (
     AutoModelForTokenClassification,
     pipeline,
 )
-from src.config import config
 
 
 @dataclass
@@ -33,40 +31,37 @@ class Entity:
         return f"Entity({self.text!r}, {self.label}, {self.score:.2f})"
 
 
-# ── Cached model loader ────────────────────────────────────────────────────────
-@st.cache_resource(show_spinner="⚙️ Loading NER model…")
+@st.cache_resource(show_spinner="⚙️ Loading NER model...")
 def _load_ner_pipeline():
-    tokenizer = AutoTokenizer.from_pretrained("dixitshashank937/ner-model1")
+    from src.config import Config
+
+    tokenizer = AutoTokenizer.from_pretrained(
+        Config.NER_MODEL_ID,
+        token=Config.HF_TOKEN or None
+    )
     model = AutoModelForTokenClassification.from_pretrained(
-        config.NER_MODEL_ID,
-        torch_dtype=torch.float16 if config.TORCH_DEVICE == "cuda" else torch.float32,
+        Config.NER_MODEL_ID,
+        token=Config.HF_TOKEN or None,
+        torch_dtype=torch.float32,
     )
     model.eval()
     return pipeline(
         "ner",
         model=model,
         tokenizer=tokenizer,
-        aggregation_strategy="simple",   # auto-merge sub-word tokens
-        device=config.PIPELINE_DEVICE,
+        aggregation_strategy="simple",
+        device=-1,
         truncation=True,
-        max_length=config.MAX_SEQ_LENGTH,
+        max_length=256,
     )
 
 
-# ── Public API ─────────────────────────────────────────────────────────────────
 def extract_entities(text: str) -> list[Entity]:
-    """
-    Returns a list of Entity objects found in `text`.
-    Example: [Entity('Delhi', 'GPE', 0.98, 10, 15), ...]
-    """
     if not text.strip():
         return []
-
     ner = _load_ner_pipeline()
-
     with torch.no_grad():
         raw = ner(text)
-
     return [
         Entity(
             text=span["word"].strip(),
@@ -80,10 +75,6 @@ def extract_entities(text: str) -> list[Entity]:
 
 
 def entities_by_type(text: str) -> dict[str, list[str]]:
-    """
-    Groups entity texts by their label type.
-    Example: {"GPE": ["Delhi", "Mumbai"], "PERSON": ["Rahul"]}
-    """
     result: dict[str, list[str]] = {}
     for ent in extract_entities(text):
         result.setdefault(ent.label, []).append(ent.text)
