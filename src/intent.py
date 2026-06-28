@@ -15,49 +15,44 @@ from transformers import (
     AutoModelForSequenceClassification,
     pipeline,
 )
-from src.config import config
 
 
-# ── Cached model loader ────────────────────────────────────────────────────────
-@st.cache_resource(show_spinner="⚙️ Loading Intent model…")
+@st.cache_resource(show_spinner="⚙️ Loading Intent model...")
 def _load_intent_pipeline():
-    tokenizer = AutoTokenizer.from_pretrained("dixitshashank937/intent-classifier")
+    from src.config import config
+
+    tokenizer = AutoTokenizer.from_pretrained(
+        config.INTENT_MODEL_ID,
+        token=config.HF_TOKEN or None
+    )
     model = AutoModelForSequenceClassification.from_pretrained(
         config.INTENT_MODEL_ID,
-        torch_dtype=torch.float16 if config.TORCH_DEVICE == "cuda" else torch.float32,
+        token=config.HF_TOKEN or None,
+        torch_dtype=torch.float32,
     )
-    model.eval()                        # inference mode
+    model.eval()
     return pipeline(
         "text-classification",
         model=model,
         tokenizer=tokenizer,
-        device=config.PIPELINE_DEVICE,
-        top_k=None,                     # return ALL label scores
+        device=-1,
+        top_k=None,
         truncation=True,
-        max_length=config.MAX_SEQ_LENGTH,
+        max_length=256,
     )
 
 
-# ── Public API ─────────────────────────────────────────────────────────────────
-def classify_intent(text: str) -> dict[str, float]:
-    """
-    Returns a dict of {intent_label: confidence_score}, sorted descending.
-    Example: {"book_flight": 0.91, "cancel_order": 0.05, ...}
-    """
+def classify_intent(text: str) -> dict:
     if not text.strip():
         return {}
-
     clf = _load_intent_pipeline()
-
     with torch.no_grad():
-        results = clf(text)             # list of [{"label": ..., "score": ...}]
-
+        results = clf(text)
     scores = {r["label"]: round(r["score"], 4) for r in results[0]}
     return dict(sorted(scores.items(), key=lambda x: x[1], reverse=True))
 
 
-def top_intent(text: str) -> tuple[str, float]:
-    """Convenience wrapper → returns (best_label, confidence)."""
+def top_intent(text: str) -> tuple:
     scores = classify_intent(text)
     if not scores:
         return "unknown", 0.0
