@@ -16,7 +16,7 @@ from src.utils import init_session_defaults, to_groq_history, format_entities_md
 from src.config import config
 
 # ── Page configuration ─────────────────────────────────────────────────────────
-st.set_page_Config(
+st.set_page_config(
     page_title=config.APP_TITLE,
     page_icon=config.APP_ICON,
     layout="wide",
