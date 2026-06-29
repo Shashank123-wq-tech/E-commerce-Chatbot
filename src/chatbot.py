@@ -17,7 +17,7 @@ from src.prompt_builder import build_from_text
 from src.groq_client import stream_response, get_response
 from src.ner import extract_entities, Entity
 from src.sentiment import SentimentResult
-from src.config import Config
+from src.config import config
 
 
 @dataclass
@@ -88,4 +88,4 @@ class ChatBot:
     @staticmethod
     def _trim_history(history: list[dict]) -> list[dict]:
         """Keep only the last MAX_HISTORY messages to stay within context window."""
-        return history[-(Config.MAX_HISTORY):]
+        return history[-(config.MAX_HISTORY):]

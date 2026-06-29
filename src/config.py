@@ -1,5 +1,5 @@
 """
-Config.py — Central Configuration for all models and settings.
+config.py — Central configuration for all models and settings.
 Update HF_USERNAME and model repo names to match your HuggingFace uploads.
 """
 
@@ -35,7 +35,6 @@ def _secret(key: str, default: str = "") -> str:
     except Exception:
         return os.getenv(key, default)
 
-config = Config()
 
 @dataclass
 class Config:
@@ -68,4 +67,4 @@ class Config:
     APP_ICON:    str = "🤖"
     MAX_HISTORY: int = 20
 
-Config = Config()    
+config = Config()    

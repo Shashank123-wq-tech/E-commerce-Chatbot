@@ -33,15 +33,15 @@ class Entity:
 
 @st.cache_resource(show_spinner="⚙️ Loading NER model...")
 def _load_ner_pipeline():
-    from src.config import Config
+    from src.config import config
 
     tokenizer = AutoTokenizer.from_pretrained(
-        Config.NER_MODEL_ID,
-        token=Config.HF_TOKEN or None
+        config.NER_MODEL_ID,
+        token=config.HF_TOKEN or None
     )
     model = AutoModelForTokenClassification.from_pretrained(
-        Config.NER_MODEL_ID,
-        token=Config.HF_TOKEN or None,
+        config.NER_MODEL_ID,
+        token=  config.HF_TOKEN or None,
         torch_dtype=torch.float32,
     )
     model.eval()

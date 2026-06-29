@@ -13,12 +13,12 @@ Architecture highlights:
 import streamlit as st
 from src.chatbot import ChatBot
 from src.utils import init_session_defaults, to_groq_history, format_entities_md, clean_text
-from src.config import Config
+from src.config import config
 
 # ── Page configuration ─────────────────────────────────────────────────────────
-st.set_page_config(
-    page_title=Config.APP_TITLE,
-    page_icon=Config.APP_ICON,
+st.set_page_Config(
+    page_title=config.APP_TITLE,
+    page_icon=config.APP_ICON,
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -63,14 +63,14 @@ with st.sidebar:
 
     st.divider()
     st.markdown(
-        f"**Model:** `{Config.GROQ_MODEL}`  \n"
-        f"**Device:** `{Config.TORCH_DEVICE}`"
+        f"**Model:** `{config.GROQ_MODEL}`  \n"
+        f"**Device:** `{config.TORCH_DEVICE}`"
     )
 
 # ══════════════════════════════════════════════════════════════════════════════
 # MAIN CHAT AREA
 # ══════════════════════════════════════════════════════════════════════════════
-st.title(f"{Config.APP_ICON} {Config.APP_TITLE}")
+st.title(f"{config.APP_ICON} {config.APP_TITLE}")
 
 # ── Render existing chat history ───────────────────────────────────────────────
 for msg in st.session_state.messages:
