@@ -37,7 +37,8 @@ def _load_ner_pipeline():
 
     tokenizer = AutoTokenizer.from_pretrained(
         config.NER_MODEL_ID,
-        token=config.HF_TOKEN or None
+        token=config.HF_TOKEN or None,
+        max_length=256
     )
     
     tokenizer.model_input_names = ["input_ids", "attention_mask"]
@@ -54,8 +55,6 @@ def _load_ner_pipeline():
         tokenizer=tokenizer,
         aggregation_strategy="simple",
         device=-1,
-        truncation=True,
-        max_length=256,
     )
 
 
