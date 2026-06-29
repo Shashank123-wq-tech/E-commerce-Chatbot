@@ -62,11 +62,7 @@ The resulting system provides a scalable and modular architecture that improves 
 
 # 🎯 Problem Statement
 
-E-commerce companies receive a high volume of customer inquiries related to orders, shipping, returns, refunds, payments, account management, and product information. Traditional customer support systems, including rule-based chatbots, often fail to understand natural language, accurately identify customer intent, extract critical information, recognize customer sentiment, and generate context-aware responses.
-
-These limitations lead to repetitive interactions, delayed issue resolution, inconsistent customer experiences, increased workload for customer support teams, and higher operational costs. Consequently, customers experience frustration and reduced satisfaction, while businesses struggle to provide efficient and personalized support at scale.
-
-This project addresses these challenges by developing an **AI-powered conversational customer support system** that combines transformer-based Natural Language Processing (NLP) models with a Large Language Model (LLM). The system intelligently understands customer queries, extracts relevant entities, analyzes customer sentiment, and generates personalized, context-aware responses to improve communication between customers and e-commerce businesses.
+E-commerce companies handle a large volume of customer support requests, while traditional rule-based chatbots often fail to accurately understand user intent, extract key information, recognize customer sentiment, and provide context-aware responses. This results in inefficient support, delayed issue resolution, and reduced customer satisfaction. This project addresses these challenges by integrating transformer-based NLP models with a Large Language Model to deliver intelligent, personalized, and efficient customer support.
 
 ---
 
