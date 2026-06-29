@@ -42,12 +42,14 @@ def _load_sentiment_pipeline():
 
     tokenizer = AutoTokenizer.from_pretrained(
         config.SENTIMENT_MODEL_ID,
-        token=config.HF_TOKEN or None
+        token=config.HF_TOKEN or None,
+        use_fast = False 
     )
     model = AutoModelForSequenceClassification.from_pretrained(
         config.SENTIMENT_MODEL_ID,
         token=config.HF_TOKEN or None,
         torch_dtype=torch.float32,
+        ignore_mismatched_sizes=True
     )
     model.eval()
     return pipeline(
