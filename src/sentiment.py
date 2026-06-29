@@ -43,7 +43,7 @@ def _load_sentiment_pipeline():
     tokenizer = AutoTokenizer.from_pretrained(
         config.SENTIMENT_MODEL_ID,
         token=config.HF_TOKEN or None,
-        use_fast = False 
+        use_fast = True 
     )
     model = AutoModelForSequenceClassification.from_pretrained(
         config.SENTIMENT_MODEL_ID,
