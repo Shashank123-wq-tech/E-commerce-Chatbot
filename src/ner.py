@@ -39,6 +39,9 @@ def _load_ner_pipeline():
         config.NER_MODEL_ID,
         token=config.HF_TOKEN or None
     )
+    
+    tokenizer.model_input_names = ["input_ids", "attention_mask"]
+    
     model = AutoModelForTokenClassification.from_pretrained(
         config.NER_MODEL_ID,
         token=  config.HF_TOKEN or None,

@@ -25,6 +25,8 @@ def _load_intent_pipeline():
         config.INTENT_MODEL_ID,
         token=config.HF_TOKEN or None
     )
+    tokenizer.model_input_names = ["input_ids", "attention_mask"]
+    
     model = AutoModelForSequenceClassification.from_pretrained(
         config.INTENT_MODEL_ID,
         token=config.HF_TOKEN or None,
