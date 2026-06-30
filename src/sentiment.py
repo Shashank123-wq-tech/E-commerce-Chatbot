@@ -17,6 +17,14 @@ from transformers import (
     pipeline,
 )
 
+SENTIMENT_LABEL_MAP = {
+    "LABEL_0": "NEGATIVE",
+    "LABEL_1": "NEUTRAL",
+    "LABEL_2": "POSITIVE",
+}
+
+def _map_sentiment_label(label: str) -> str:
+    return SENTIMENT_LABEL_MAP.get(label, label)
 
 @dataclass
 class SentimentResult:

@@ -8,14 +8,37 @@ Key optimisations:
   • truncation + max_length → avoids OOM on long inputs
 """
 
+import json
 import streamlit as st
 import torch
+from huggingface_hub import hf_hub_download
 from transformers import (
     AutoTokenizer,
     AutoModelForSequenceClassification,
     pipeline,
 )
 
+@st.cache_resource(show_spinner="⚙️ Loading id2intent mapping...")
+def _load_id2intent() -> dict:
+    """
+    Downloads id2intent.json from your HuggingFace repo and loads it.
+    Expected format: {"0": "greeting", "1": "track_order", ...}
+    """
+    from src.config import config
+
+    try:
+        file_path = hf_hub_download(
+            repo_id=config.INTENT_MODEL_ID,
+            filename="id2intent.json",
+            token=config.HF_TOKEN or None,
+        )
+        with open(file_path, "r", encoding="utf-8") as f:
+            raw = json.load(f)
+        # Normalise keys to "LABEL_0" format and values to strings
+        return {f"LABEL_{k}": v for k, v in raw.items()}
+    except Exception as e:
+        st.warning(f"Could not load id2intent.json: {e}")
+        return {}
 
 @st.cache_resource(show_spinner="⚙️ Loading Intent model...")
 def _load_intent_pipeline():
