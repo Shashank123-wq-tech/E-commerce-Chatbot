@@ -95,13 +95,20 @@ def _resolve_label(raw_label: str, id2label: dict) -> str:
 def analyze_sentiment(text: str) -> SentimentResult:
     if not text.strip():
         return SentimentResult("NEUTRAL", 1.0, {"NEUTRAL": 1.0})
-    clf = _load_sentiment_pipeline()
+
+    clf, id2label = _load_sentiment_pipeline()
+
     with torch.no_grad():
         raw = clf(text)
-    all_scores = {r["label"]: round(r["score"], 4) for r in raw[0]}
+
+    all_scores = {
+        _resolve_label(r["label"], id2label): round(r["score"], 4)
+        for r in raw[0]
+    }
     best = max(raw[0], key=lambda x: x["score"])
+
     return SentimentResult(
-        label=best["label"],
+        label=_resolve_label(best["label"], id2label),
         score=round(best["score"], 4),
         all_scores=all_scores,
     )
