@@ -100,10 +100,19 @@ def _load_id2intent() -> dict:
 def classify_intent(text: str) -> dict:
     if not text.strip():
         return {}
-    clf = _load_intent_pipeline()
+
+    clf      = _load_intent_pipeline()
+    id2intent = _load_id2intent()
+
     with torch.no_grad():
         results = clf(text)
-    scores = {r["label"]: round(r["score"], 4) for r in results[0]}
+
+    scores = {}
+    for r in results[0]:
+        raw_label  = r["label"]                              # e.g. "LABEL_19"
+        real_label = id2intent.get(raw_label, raw_label)    # e.g. "delivery_issue"
+        scores[real_label] = round(r["score"], 4)
+
     return dict(sorted(scores.items(), key=lambda x: x[1], reverse=True))
 
 
@@ -113,3 +122,5 @@ def top_intent(text: str) -> tuple:
         return "unknown", 0.0
     label, conf = next(iter(scores.items()))
     return label, conf
+
+
