@@ -18,27 +18,6 @@ from transformers import (
     pipeline,
 )
 
-@st.cache_resource(show_spinner="⚙️ Loading id2intent mapping...")
-def _load_id2intent() -> dict:
-    """
-    Downloads id2intent.json from your HuggingFace repo and loads it.
-    Expected format: {"0": "greeting", "1": "track_order", ...}
-    """
-    from src.config import config
-
-    try:
-        file_path = hf_hub_download(
-            repo_id=config.INTENT_MODEL_ID,
-            filename="id2intent.json",
-            token=config.HF_TOKEN or None,
-        )
-        with open(file_path, "r", encoding="utf-8") as f:
-            raw = json.load(f)
-        # Normalise keys to "LABEL_0" format and values to strings
-        return {f"LABEL_{k}": v for k, v in raw.items()}
-    except Exception as e:
-        st.warning(f"Could not load id2intent.json: {e}")
-        return {}
 
 @st.cache_resource(show_spinner="⚙️ Loading Intent model...")
 def _load_intent_pipeline():
@@ -65,6 +44,57 @@ def _load_intent_pipeline():
         truncation=True,
         max_length=256,
     )
+    
+@st.cache_resource(show_spinner="⚙️ Loading id2intent mapping...")
+def _load_id2intent() -> dict:
+    from src.config import config
+
+    # ── Try 1: load from id2intent.json ───────────────────────────────────────
+    try:
+        file_path = hf_hub_download(
+            repo_id=config.INTENT_MODEL_ID,
+            filename="id2intent.json",
+            token=config.HF_TOKEN or None,
+        )
+        with open(file_path, "r", encoding="utf-8") as f:
+            raw = json.load(f)
+
+        # Handle both {"0": "greeting"} and {"LABEL_0": "greeting"} formats
+        mapping = {}
+        for k, v in raw.items():
+            key = str(k).replace("LABEL_", "")   # strip LABEL_ if present
+            mapping[f"LABEL_{key}"] = v           # normalise to LABEL_X format
+        return mapping
+
+    except Exception as e:
+        pass
+
+    # ── Try 2: load from intent2id.json and reverse it ────────────────────────
+    try:
+        file_path = hf_hub_download(
+            repo_id=config.INTENT_MODEL_ID,
+            filename="intent2id.json",
+            token=config.HF_TOKEN or None,
+        )
+        with open(file_path, "r", encoding="utf-8") as f:
+            raw = json.load(f)
+
+        # intent2id is {"greeting": 0} → reverse to {0: "greeting"}
+        mapping = {}
+        for intent_name, label_id in raw.items():
+            mapping[f"LABEL_{label_id}"] = intent_name
+        return mapping
+
+    except Exception as e:
+        pass
+
+    # ── Try 3: read directly from model config ────────────────────────────────
+    try:
+        clf = _load_intent_pipeline()
+        id2label = clf.model.config.id2label
+        return {f"LABEL_{k}": v for k, v in id2label.items()}
+    except Exception:
+        return {}    
 
 
 def classify_intent(text: str) -> dict:
