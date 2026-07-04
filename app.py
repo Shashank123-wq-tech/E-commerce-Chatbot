@@ -23,7 +23,25 @@ html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
     min-height: 100vh;
 }
 
-#MainMenu, footer, header { visibility: hidden; }
+/* Hide only Streamlit branding — NOT the sidebar toggle */
+#MainMenu { visibility: hidden; }
+footer { visibility: hidden; }
+header { visibility: hidden; }
+
+/* Force sidebar toggle button to always stay visible */
+[data-testid="collapsedControl"] {
+    visibility: visible !important;
+    display: flex !important;
+}
+
+/* Force sidebar to stay open by default */
+[data-testid="stSidebar"] {
+    display: block !important;
+    visibility: visible !important;
+    transform: none !important;
+    min-width: 280px !important;
+    max-width: 320px !important;
+}
 .block-container {
     padding-top: 1.5rem !important;
     padding-bottom: 2rem !important;
