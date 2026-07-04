@@ -12,24 +12,21 @@ st.set_page_config(
 )
 
 # ── Custom CSS ─────────────────────────────────────────────────────────────────
-
-# ── Custom CSS ─────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap');
 
 html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 
-/* ── Background — soft white gradient ───────────────────────────────────── */
 .stApp {
-    background: linear-gradient(135deg, #F0F4FF 0%, #FAF5FF 40%, #F0FDF4 100%);
+    background: linear-gradient(135deg, #0D0D1A 0%, #111128 50%, #0D0D1A 100%);
     min-height: 100vh;
 }
 
 /* ── Hide Streamlit branding only ────────────────────────────────────────── */
 #MainMenu { visibility: hidden; }
-footer    { visibility: hidden; }
-header    { visibility: hidden; }
+footer { visibility: hidden; }
+header { visibility: hidden; }
 
 /* ── Sidebar toggle arrow — always visible ───────────────────────────────── */
 [data-testid="collapsedControl"] {
@@ -40,15 +37,14 @@ header    { visibility: hidden; }
 .block-container {
     padding-top: 1.5rem !important;
     padding-bottom: 2rem !important;
-    max-width: 880px !important;
+    max-width: 860px !important;
 }
 
-/* ── Page title ──────────────────────────────────────────────────────────── */
 h1 {
     font-family: 'Poppins', sans-serif !important;
     font-size: 2rem !important;
-    font-weight: 800 !important;
-    background: linear-gradient(90deg, #6C63FF, #A855F7, #EC4899);
+    font-weight: 700 !important;
+    background: linear-gradient(90deg, #A78BFA, #60A5FA, #34D399);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -58,9 +54,8 @@ h1 {
 
 /* ── Sidebar ─────────────────────────────────────────────────────────────── */
 [data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #FFFFFF 0%, #F8F4FF 100%) !important;
-    border-right: 1.5px solid #E9D8FD !important;
-    box-shadow: 4px 0 20px rgba(108, 99, 255, 0.06) !important;
+    background: linear-gradient(180deg, #13132B 0%, #0F0F22 100%) !important;
+    border-right: 1px solid rgba(167, 139, 250, 0.2) !important;
 }
 [data-testid="stSidebar"] .block-container {
     padding-top: 1.5rem !important;
@@ -69,64 +64,59 @@ h1 {
 [data-testid="stSidebar"] h1,
 [data-testid="stSidebar"] h2 {
     font-family: 'Poppins', sans-serif !important;
-    font-size: 1.05rem !important;
-    font-weight: 700 !important;
-    color: #6C63FF !important;
-    -webkit-text-fill-color: #6C63FF !important;
+    font-size: 1.1rem !important;
+    color: #A78BFA !important;
+    -webkit-text-fill-color: #A78BFA !important;
+    letter-spacing: 0.3px;
 }
 [data-testid="stSidebar"] .stCaption {
-    color: #A78BFA !important;
+    color: rgba(167, 139, 250, 0.6) !important;
     font-size: 0.72rem !important;
 }
 [data-testid="stSidebar"] p,
 [data-testid="stSidebar"] li {
-    color: #6B7280 !important;
+    color: #94A3B8 !important;
     font-size: 0.82rem !important;
 }
 [data-testid="stSidebar"] strong {
-    color: #374151 !important;
+    color: #CBD5E1 !important;
 }
 [data-testid="stSidebar"] code {
     font-size: 0.7rem !important;
-    background: #EDE9FE !important;
-    color: #6C63FF !important;
-    border: 1px solid #DDD6FE !important;
 }
 
-/* ── NLP Metric Cards ────────────────────────────────────────────────────── */
+/* ── NLP Metric Cards ─────────────────────────────────────────────────────── */
 [data-testid="stMetric"] {
-    background: #FFFFFF !important;
-    border: 1.5px solid #E9D8FD !important;
-    border-radius: 14px !important;
-    padding: 0.9rem 1rem !important;
+    background: rgba(167, 139, 250, 0.07) !important;
+    border: 1px solid rgba(167, 139, 250, 0.2) !important;
+    border-radius: 12px !important;
+    padding: 0.8rem 1rem !important;
     margin-bottom: 0.6rem !important;
-    box-shadow: 0 2px 12px rgba(108, 99, 255, 0.08) !important;
-    transition: all 0.2s ease !important;
+    transition: all 0.2s ease;
 }
 [data-testid="stMetric"]:hover {
-    border-color: #A78BFA !important;
-    box-shadow: 0 4px 20px rgba(108, 99, 255, 0.15) !important;
-    transform: translateY(-1px) !important;
+    border-color: rgba(167, 139, 250, 0.45) !important;
+    background: rgba(167, 139, 250, 0.12) !important;
 }
 [data-testid="stMetricLabel"] p {
-    color: #A78BFA !important;
-    font-size: 0.7rem !important;
-    font-weight: 600 !important;
+    color: rgba(167, 139, 250, 0.7) !important;
+    font-size: 0.72rem !important;
+    font-weight: 500 !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.9px !important;
+    letter-spacing: 0.8px !important;
 }
 [data-testid="stMetricValue"] {
-    color: #1F2937 !important;
+    color: #E2E8F0 !important;
     font-size: 1rem !important;
-    font-weight: 700 !important;
+    font-weight: 600 !important;
 }
 
-/* ── Info box ────────────────────────────────────────────────────────────── */
+/* ── Info box ─────────────────────────────────────────────────────────────── */
 [data-testid="stSidebar"] .stAlert {
-    background: #F5F3FF !important;
-    border: 1.5px dashed #C4B5FD !important;
+    background: rgba(167, 139, 250, 0.07) !important;
+    border: 1px dashed rgba(167, 139, 250, 0.3) !important;
     border-radius: 12px !important;
-    color: #7C3AED !important;
+    color: rgba(167, 139, 250, 0.75) !important;
 }
 
 /* ── Chat Messages ───────────────────────────────────────────────────────── */
@@ -134,162 +124,98 @@ h1 {
     background: transparent !important;
     border: none !important;
     padding: 0.2rem 0 !important;
-    margin-bottom: 0.6rem !important;
+    margin-bottom: 0.5rem !important;
 }
 [data-testid="chatAvatarIcon-user"] {
-    background: linear-gradient(135deg, #6C63FF, #A855F7) !important;
+    background: linear-gradient(135deg, #6C63FF, #A78BFA) !important;
     border-radius: 50% !important;
     min-width: 36px !important;
     height: 36px !important;
 }
 [data-testid="chatAvatarIcon-assistant"] {
-    background: linear-gradient(135deg, #059669, #34D399) !important;
+    background: linear-gradient(135deg, #0F766E, #34D399) !important;
     border-radius: 10px !important;
     min-width: 36px !important;
     height: 36px !important;
 }
 [data-testid="stChatMessageContent"] {
-    background: #FFFFFF !important;
-    border: 1.5px solid #EDE9FE !important;
-    border-radius: 18px !important;
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    border-radius: 16px !important;
     border-top-left-radius: 4px !important;
-    padding: 0.9rem 1.2rem !important;
-    color: #1F2937 !important;
+    padding: 0.85rem 1.1rem !important;
+    color: #E2E8F0 !important;
     font-size: 0.92rem !important;
-    line-height: 1.7 !important;
+    line-height: 1.65 !important;
     max-width: 85% !important;
-    box-shadow: 0 2px 16px rgba(108, 99, 255, 0.07) !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.25) !important;
 }
 
 /* ── Chat Input ──────────────────────────────────────────────────────────── */
 [data-testid="stChatInput"] {
-    background: #FFFFFF !important;
-    border: 2px solid #DDD6FE !important;
-    border-radius: 18px !important;
-    color: #1F2937 !important;
+    background: rgba(255,255,255,0.05) !important;
+    border: 1.5px solid rgba(167, 139, 250, 0.35) !important;
+    border-radius: 16px !important;
+    color: #E2E8F0 !important;
     font-size: 0.92rem !important;
-    box-shadow: 0 2px 16px rgba(108, 99, 255, 0.08) !important;
     transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
 }
 [data-testid="stChatInput"]:focus-within {
-    border-color: #A78BFA !important;
-    box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.15) !important;
+    border-color: rgba(167, 139, 250, 0.75) !important;
+    box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.12) !important;
 }
 [data-testid="stChatInputSubmitButton"] button {
-    background: linear-gradient(135deg, #6C63FF, #A855F7) !important;
+    background: linear-gradient(135deg, #6C63FF, #A78BFA) !important;
     border: none !important;
-    border-radius: 12px !important;
+    border-radius: 10px !important;
 }
 
 /* ── Dividers ────────────────────────────────────────────────────────────── */
-hr {
-    border-color: #EDE9FE !important;
-    margin: 0.8rem 0 !important;
-}
+hr { border-color: rgba(167, 139, 250, 0.15) !important; margin: 0.8rem 0 !important; }
 
 /* ── Clear Chat Button ───────────────────────────────────────────────────── */
 .stButton button {
-    background: #FFF1F2 !important;
-    border: 1.5px solid #FECDD3 !important;
-    color: #E11D48 !important;
-    border-radius: 12px !important;
+    background: rgba(239, 68, 68, 0.08) !important;
+    border: 1px solid rgba(239, 68, 68, 0.25) !important;
+    color: #FCA5A5 !important;
+    border-radius: 10px !important;
     font-size: 0.82rem !important;
-    font-weight: 600 !important;
+    font-weight: 500 !important;
     transition: all 0.2s ease !important;
 }
 .stButton button:hover {
-    background: #FFE4E6 !important;
-    border-color: #FDA4AF !important;
-    box-shadow: 0 2px 12px rgba(225, 29, 72, 0.15) !important;
+    background: rgba(239, 68, 68, 0.18) !important;
+    border-color: rgba(239, 68, 68, 0.5) !important;
 }
 
 /* ── Expander ────────────────────────────────────────────────────────────── */
 [data-testid="stExpander"] {
-    background: #FAFAFA !important;
-    border: 1.5px solid #EDE9FE !important;
-    border-radius: 12px !important;
+    background: rgba(167, 139, 250, 0.05) !important;
+    border: 1px solid rgba(167, 139, 250, 0.15) !important;
+    border-radius: 10px !important;
 }
 [data-testid="stExpander"] summary {
-    color: #7C3AED !important;
+    color: rgba(167, 139, 250, 0.8) !important;
     font-size: 0.8rem !important;
-    font-weight: 600 !important;
 }
 
 /* ── Code ────────────────────────────────────────────────────────────────── */
 code {
-    background: #EDE9FE !important;
-    border: 1px solid #DDD6FE !important;
+    background: rgba(167, 139, 250, 0.1) !important;
+    border: 1px solid rgba(167, 139, 250, 0.2) !important;
     border-radius: 6px !important;
-    color: #6C63FF !important;
+    color: #C4B5FD !important;
     font-size: 0.78rem !important;
-    padding: 0.2rem 0.45rem !important;
+    padding: 0.2rem 0.4rem !important;
 }
 
 /* ── Scrollbar ───────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: #F5F3FF; }
-::-webkit-scrollbar-thumb {
-    background: #C4B5FD;
-    border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover { background: #A78BFA; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(167, 139, 250, 0.3); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(167, 139, 250, 0.5); }
 </style>
 """, unsafe_allow_html=True)
-
-
-# ── Paste this to replace your st.markdown subtitle and suggestion cards ───────
-
-# Subtitle under title
-st.markdown(
-    '<p style="color:#9CA3AF; font-size:0.88rem; '
-    'margin-top:-0.5rem; margin-bottom:1rem;">'
-    'Powered by your NLP models &nbsp;·&nbsp; '
-    'Ask about orders, returns, products &amp; more'
-    '</p>',
-    unsafe_allow_html=True,
-)
-
-# Empty state suggestion cards — light theme version
-if not st.session_state.messages:
-    st.markdown(
-        """
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:2rem 0;">
-            <div style="background:#FFFFFF; border:1.5px solid #DDD6FE;
-                        border-radius:16px; padding:1.1rem 1.2rem;
-                        box-shadow:0 2px 12px rgba(108,99,255,0.08);">
-                <p style="color:#6C63FF; font-size:0.85rem; font-weight:700; margin:0 0 5px;">
-                    📦 Track Order</p>
-                <p style="color:#6B7280; font-size:0.8rem; margin:0;">
-                    Where is my order #45678?</p>
-            </div>
-            <div style="background:#FFFFFF; border:1.5px solid #BBF7D0;
-                        border-radius:16px; padding:1.1rem 1.2rem;
-                        box-shadow:0 2px 12px rgba(5,150,105,0.08);">
-                <p style="color:#059669; font-size:0.85rem; font-weight:700; margin:0 0 5px;">
-                    ↩️ Return &amp; Refund</p>
-                <p style="color:#6B7280; font-size:0.8rem; margin:0;">
-                    I want to return a damaged item</p>
-            </div>
-            <div style="background:#FFFFFF; border:1.5px solid #BFDBFE;
-                        border-radius:16px; padding:1.1rem 1.2rem;
-                        box-shadow:0 2px 12px rgba(59,130,246,0.08);">
-                <p style="color:#2563EB; font-size:0.85rem; font-weight:700; margin:0 0 5px;">
-                    ❓ Product Info</p>
-                <p style="color:#6B7280; font-size:0.8rem; margin:0;">
-                    What are the specs of this product?</p>
-            </div>
-            <div style="background:#FFFFFF; border:1.5px solid #FDE68A;
-                        border-radius:16px; padding:1.1rem 1.2rem;
-                        box-shadow:0 2px 12px rgba(245,158,11,0.08);">
-                <p style="color:#D97706; font-size:0.85rem; font-weight:700; margin:0 0 5px;">
-                    💳 Payment Issue</p>
-                <p style="color:#6B7280; font-size:0.8rem; margin:0;">
-                    My payment failed but was deducted</p>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
 
 # ── HuggingFace auth ───────────────────────────────────────────────────────────
 setup_hf_auth()
