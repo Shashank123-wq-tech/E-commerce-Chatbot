@@ -11,6 +11,7 @@ via st.cache_resource so the engine is created once per app lifecycle.
 """
 
 from __future__ import annotations
+import json
 import streamlit as st
 from datetime import datetime, timezone
 from sqlalchemy import (
@@ -19,6 +20,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
+
 
 
 # ── Engine (cached — created once) ─────────────────────────────────────────────
@@ -138,6 +140,7 @@ def get_conversation_summary(conversation_id: str) -> str | None:
 
 
 # ── Message helpers ───────────────────────────────────────────────────────────────
+
 def save_message(
     conversation_id: str,
     role: str,
@@ -162,7 +165,7 @@ def save_message(
                 "content": content,
                 "intent": intent,
                 "sentiment": sentiment,
-                "entities": entities or [],
+                "entities": json.dumps(entities or []),   # ← explicit JSON string
             }
         )
         conn.execute(
@@ -186,17 +189,25 @@ def get_messages(conversation_id: str, limit: int = 100) -> list[dict]:
             {"cid": conversation_id, "limit": limit}
         ).fetchall()
 
-    return [
-        {
+    result = []
+    for r in rows:
+        entities = r[4]
+        # PostgreSQL JSON column may return dict/list already, or a string
+        if isinstance(entities, str):
+            try:
+                entities = json.loads(entities)
+            except (json.JSONDecodeError, TypeError):
+                entities = []
+
+        result.append({
             "role": r[0],
             "content": r[1],
             "intent": r[2],
             "sentiment": r[3],
-            "entities": r[4],
+            "entities": entities,
             "created_at": r[5],
-        }
-        for r in rows
-    ]
+        })
+    return result
 
 
 def count_messages(conversation_id: str) -> int:
