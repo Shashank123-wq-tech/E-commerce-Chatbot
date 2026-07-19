@@ -18,6 +18,7 @@ from src.groq_client import stream_response, get_response
 from src.ner import extract_entities, Entity
 from src.sentiment import SentimentResult
 from src.config import config
+from src import memory
 
 
 @dataclass
@@ -40,24 +41,31 @@ class ChatBot:
     def process_stream(
         self,
         user_input: str,
-        history: list[dict],            # [{"role": "user"|"assistant", "content": "..."}]
+        conversation_id: str,           # ← CHANGED: was `history: list[dict]`
     ) -> tuple[Generator[str, None, None], dict]:
         """
-        Returns:
             (token_generator, nlp_meta)
-            • token_generator → pass to st.write_stream()
-            • nlp_meta        → dict with intent, sentiment, entities for sidebar
         """
         # 1. NLP analysis (three cached models — no reload cost)
         system_prompt, intent_label, sentiment = build_from_text(user_input)
         entities = extract_entities(user_input)
-
+        
+        # 2 Get Context from DB - summary + recent messages (NEW)
+        recent_messages, summary = memory.get_llm_context(conversation_id)
+        
+        # 3. Prepend summary into the system prompt if it exists
+        if summary:
+            system_prompt = (
+                f"Context from earlier in this conversation: {summary}\n\n"
+                f"{system_prompt}"
+            )
+        
         # 2. Build message history for Groq (trim to last N turns)
-        trimmed = self._trim_history(history)
-        trimmed.append({"role": "user", "content": user_input})
-
+        groq_messages = recent_messages + [{"role": "user", "content": user_input}]
+        
+         
         # 3. Create streaming generator
-        gen = stream_response(trimmed, system_prompt)
+        gen = stream_response(groq_messages, system_prompt)
 
         nlp_meta = {
             "intent":    intent_label,
@@ -67,15 +75,17 @@ class ChatBot:
         return gen, nlp_meta
 
     # ── Non-streaming (for tests / CLI) ───────────────────────────────────────
-    def process(self, user_input: str, history: list[dict]) -> tuple[str, dict]:
+    def process(self, user_input: str, conversation_id: str) -> tuple[str, dict]:
         """Returns (full_response_string, nlp_meta)."""
         system_prompt, intent_label, sentiment = build_from_text(user_input)
         entities = extract_entities(user_input)
 
-        trimmed = self._trim_history(history)
-        trimmed.append({"role": "user", "content": user_input})
+        recent_messages, summary = memory.get_llm_context(conversation_id)
+        if summary:
+            system_prompt = f"Context from earlier: {summary}\n\n{system_prompt}"
 
-        response = get_response(trimmed, system_prompt)
+        groq_messages = recent_messages + [{"role": "user", "content": user_input}] 
+        response = get_response(groq_messages, system_prompt)
 
         nlp_meta = {
             "intent":    intent_label,
@@ -83,9 +93,3 @@ class ChatBot:
             "entities":  [str(e) for e in entities],
         }
         return response, nlp_meta
-
-    # ── Helpers ───────────────────────────────────────────────────────────────
-    @staticmethod
-    def _trim_history(history: list[dict]) -> list[dict]:
-        """Keep only the last MAX_HISTORY messages to stay within context window."""
-        return history[-(config.MAX_HISTORY):]

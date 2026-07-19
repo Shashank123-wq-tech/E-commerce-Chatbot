@@ -66,5 +66,16 @@ class Config:
     APP_TITLE:   str = "AI Powered Chatbot"
     APP_ICON:    str = "🤖"
     MAX_HISTORY: int = 20
+    
+    # ── ADD these lines to your existing src/config.py ─────────────────────────────
+    # Add this field inside your @dataclass Config class:
+
+    DATABASE_URL: str = field(
+        default_factory=lambda: _secret("DATABASE_URL", "")
+    )
+
+    # ── That's the ONLY change needed in config.py ─────────────────────────────────
+    # Your existing _secret() function already reads from st.secrets/.env,
+    # so DATABASE_URL will work the same way as GROQ_API_KEY does.
 
 config = Config()    

@@ -1,3 +1,5 @@
+from src import memory
+from src import database as db
 import streamlit as st
 from src.config import config
 from src.hf_auth import setup_hf_auth, get_model_info
@@ -224,11 +226,17 @@ code{
 setup_hf_auth()
 
 # ── Session state ──────────────────────────────────────────────────────────────
+db.init_db()   # creates tables if they don't exist (safe to call every run)
+if "conversation_id" not in st.session_state:
+    user_id, conversation_id = memory.init_conversation()
+    st.session_state.user_id = user_id
+    st.session_state.conversation_id = conversation_id
+    # Load past messages from DB so refresh doesn't lose chat history
+    st.session_state.messages = memory.load_history_for_ui(conversation_id)
+
 init_session_defaults(st.session_state, {
-    "messages": [],
     "nlp_meta": {},
 })
-
 
 # ── Singleton chatbot ──────────────────────────────────────────────────────────
 @st.cache_resource
@@ -274,8 +282,9 @@ with st.sidebar:
 
     st.divider()
 
-    # Clear chat — exactly as original
+    # Clear chat — MODIFIED: also clears DB-persisted messages for this conversation
     if st.button("🗑️ Clear chat", use_container_width=True):
+        memory.clear_conversation(st.session_state.conversation_id)
         st.session_state.messages = []
         st.session_state.nlp_meta = {}
         st.rerun()
@@ -352,7 +361,8 @@ for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# ── Chat input — exactly as original ──────────────────────────────────────────
+# ── Chat input — MODIFIED: uses conversation_id (DB memory) instead of raw history,
+#    and persists both messages to PostgreSQL after the response ─────────────────
 if user_input := st.chat_input("Type your message…"):
 
     user_input = clean_text(user_input)
@@ -361,12 +371,22 @@ if user_input := st.chat_input("Type your message…"):
     with st.chat_message("user"):
         st.markdown(user_input)
 
-    groq_history = to_groq_history(st.session_state.messages[:-1])
-
     with st.chat_message("assistant"):
-        gen, nlp_meta = bot.process_stream(user_input, groq_history)
+        gen, nlp_meta = bot.process_stream(
+            user_input,
+            st.session_state.conversation_id     # ← DB-backed context, not raw history
+        )
         full_response = st.write_stream(gen)
 
     st.session_state.messages.append({"role": "assistant", "content": full_response})
     st.session_state.nlp_meta = nlp_meta
+
+    # Save this turn to PostgreSQL so it survives refresh/restart
+    memory.save_turn(
+        st.session_state.conversation_id,
+        user_input,
+        full_response,
+        nlp_meta,
+    )
+
     st.rerun()
