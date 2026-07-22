@@ -222,11 +222,40 @@ code{
 </style>
 """, unsafe_allow_html=True)
 
+# ── Database init ──────────────────────────────────────────────────────────────
+db.init_db()   # creates tables if they don't exist (safe to call every run)
+
+# ══════════════════════════════════════════════════════════════════════════════
+# GOOGLE LOGIN GATE — NEW
+# ══════════════════════════════════════════════════════════════════════════════
+if not st.user.is_logged_in:
+    st.markdown(
+        """
+        <div style="display:flex; flex-direction:column; align-items:center;
+                    justify-content:center; min-height:65vh; text-align:center;">
+            <h1 style="margin-bottom:0.3rem;">🛍️ E-Commerce AI Chatbot</h1>
+            <p style="color:#64748B; font-size:0.95rem; margin-bottom:2rem;">
+                Sign in to start chatting — your conversation history is
+                saved to your account
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
+        st.button(
+            "🔐 Continue with Google",
+            on_click=st.login,
+            use_container_width=True,
+        )
+    st.stop()   # ← nothing below this runs until the user logs in
+
+
 # ── HuggingFace auth ───────────────────────────────────────────────────────────
 setup_hf_auth()
 
 # ── Session state ──────────────────────────────────────────────────────────────
-db.init_db()   # creates tables if they don't exist (safe to call every run)
 if "conversation_id" not in st.session_state:
     user_id, conversation_id = memory.init_conversation()
     st.session_state.user_id = user_id
@@ -252,6 +281,32 @@ bot = get_chatbot()
 with st.sidebar:
     st.title("🔍 NLP Insights")
     st.caption("Live analysis of the last message")
+
+    # ── Logged-in Google user card — NEW ────────────────────────────────────────
+    st.markdown(
+        f"""
+        <div style="display:flex; align-items:center; gap:10px;
+                    background:#F5F3FF; border:1px solid #DDD6FE;
+                    border-radius:10px; padding:8px 12px; margin-bottom:0.8rem;">
+            <img src="{st.user.picture}" style="width:30px; height:30px;
+                    border-radius:50%;" />
+            <div>
+                <p style="margin:0; font-size:0.82rem; font-weight:600; color:#4C1D95;">
+                    {st.user.name}
+                </p>
+                <p style="margin:0; font-size:0.7rem; color:#8B5CF6;">
+                    {st.user.email}
+                </p>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    if st.button("🚪 Log out", use_container_width=True):
+        st.logout()
+
+    st.divider()
 
     meta = st.session_state.nlp_meta
 
