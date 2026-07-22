@@ -1,13 +1,8 @@
 """
 database.py — PostgreSQL connectivity layer.
 
-Schema:
-  users          → one row per browser session / user
-  conversations  → one row per chat session (belongs to a user)
-  messages       → every user + assistant message (belongs to a conversation)
-
-Uses SQLAlchemy Core (lightweight, no ORM overhead) + connection pooling
-via st.cache_resource so the engine is created once per app lifecycle.
+MODIFIED for Google Login: password_hash is now nullable since Google
+handles authentication — we just need email + name from the OIDC token.
 """
 
 from __future__ import annotations
@@ -22,8 +17,6 @@ from sqlalchemy.dialects.postgresql import UUID
 import uuid
 
 
-
-# ── Engine (cached — created once) ─────────────────────────────────────────────
 @st.cache_resource(show_spinner=False)
 def get_engine():
     from src.config import config
@@ -37,7 +30,10 @@ metadata = MetaData()
 users = Table(
     "users", metadata,
     Column("id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
-    Column("session_key", String, unique=True, nullable=False),
+    Column("email", String, unique=True, nullable=False),
+    Column("password_hash", String, nullable=True),   # ← nullable now (Google users don't have one)
+    Column("name", String, nullable=True),
+    Column("picture", String, nullable=True),          # ← NEW: Google profile photo URL
     Column("created_at", TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)),
 )
 
@@ -45,7 +41,7 @@ conversations = Table(
     "conversations", metadata,
     Column("id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
     Column("user_id", UUID(as_uuid=True), ForeignKey("users.id"), nullable=False),
-    Column("summary", Text, nullable=True),          # rolling summary of old messages
+    Column("summary", Text, nullable=True),
     Column("created_at", TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)),
     Column("updated_at", TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc)),
 )
@@ -54,7 +50,7 @@ messages = Table(
     "messages", metadata,
     Column("id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
     Column("conversation_id", UUID(as_uuid=True), ForeignKey("conversations.id"), nullable=False),
-    Column("role", String, nullable=False),           # "user" | "assistant"
+    Column("role", String, nullable=False),
     Column("content", Text, nullable=False),
     Column("intent", String, nullable=True),
     Column("sentiment", String, nullable=True),
@@ -64,27 +60,44 @@ messages = Table(
 
 
 def init_db() -> None:
-    """Create tables if they don't exist. Call once at app startup."""
     engine = get_engine()
     metadata.create_all(engine)
 
 
-# ── User helpers ────────────────────────────────────────────────────────────────
-def get_or_create_user(session_key: str) -> str:
-    """Returns user_id (str). Creates a user row if not found."""
+# ══════════════════════════════════════════════════════════════════════════════
+# Google-auth user helpers
+# ══════════════════════════════════════════════════════════════════════════════
+
+def get_or_create_user_by_email(email: str, name: str = None, picture: str = None) -> str:
+    """
+    Returns user_id. Creates the user on their first Google login,
+    otherwise returns their existing id (and refreshes name/picture
+    in case they changed on Google's side).
+    """
     engine = get_engine()
+    email = email.strip().lower()
+
     with engine.begin() as conn:
         row = conn.execute(
-            text("SELECT id FROM users WHERE session_key = :sk"),
-            {"sk": session_key}
+            text("SELECT id FROM users WHERE email = :email"),
+            {"email": email}
         ).fetchone()
+
         if row:
+            # Keep name/picture fresh on every login
+            conn.execute(
+                text("UPDATE users SET name = :name, picture = :picture WHERE id = :id"),
+                {"name": name, "picture": picture, "id": row[0]}
+            )
             return str(row[0])
 
         new_id = uuid.uuid4()
         conn.execute(
-            text("INSERT INTO users (id, session_key) VALUES (:id, :sk)"),
-            {"id": new_id, "sk": session_key}
+            text("""
+                INSERT INTO users (id, email, name, picture)
+                VALUES (:id, :email, :name, :picture)
+            """),
+            {"id": new_id, "email": email, "name": name, "picture": picture}
         )
         return str(new_id)
 
@@ -140,7 +153,6 @@ def get_conversation_summary(conversation_id: str) -> str | None:
 
 
 # ── Message helpers ───────────────────────────────────────────────────────────────
-
 def save_message(
     conversation_id: str,
     role: str,
@@ -165,7 +177,7 @@ def save_message(
                 "content": content,
                 "intent": intent,
                 "sentiment": sentiment,
-                "entities": json.dumps(entities or []),   # ← explicit JSON string
+                "entities": json.dumps(entities or []),
             }
         )
         conn.execute(
@@ -175,7 +187,6 @@ def save_message(
 
 
 def get_messages(conversation_id: str, limit: int = 100) -> list[dict]:
-    """Returns messages in chronological order (oldest first)."""
     engine = get_engine()
     with engine.begin() as conn:
         rows = conn.execute(
@@ -192,13 +203,11 @@ def get_messages(conversation_id: str, limit: int = 100) -> list[dict]:
     result = []
     for r in rows:
         entities = r[4]
-        # PostgreSQL JSON column may return dict/list already, or a string
         if isinstance(entities, str):
             try:
                 entities = json.loads(entities)
             except (json.JSONDecodeError, TypeError):
                 entities = []
-
         result.append({
             "role": r[0],
             "content": r[1],
@@ -221,7 +230,6 @@ def count_messages(conversation_id: str) -> int:
 
 
 def delete_conversation_messages(conversation_id: str) -> None:
-    """Used by 'Clear chat' — wipes messages but keeps the conversation row."""
     engine = get_engine()
     with engine.begin() as conn:
         conn.execute(
