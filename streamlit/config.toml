@@ -10,9 +10,13 @@ enableXsrfProtection = true
 gatherUsageStats = false       # opt out of Streamlit telemetry
 
 [theme]
-base            = "dark"
-primaryColor    = "#7C3AED"    # purple accent
-backgroundColor = "#0F0F0F"
-secondaryBackgroundColor = "#1A1A2E"
-textColor       = "#FAFAFA"
-font            = "sans serif"
+base = "light"
+primaryColor = "#7C3AED"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F8FAFC"
+textColor = "#1E293B"
+font = "sans serif"
+ 
+[server]
+headless = true
+enableCORS = false
