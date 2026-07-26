@@ -21,11 +21,30 @@ html, body, [class*="css"]{
     font-family:'Inter',sans-serif;
 }
 
+/* ---------------- Force Light Mode (overrides phone/system dark mode) ------ */
+
+:root, .stApp {
+    color-scheme: light !important;
+}
+
+@media (prefers-color-scheme: dark) {
+    .stApp,
+    [data-testid="stSidebar"],
+    [data-testid="stChatMessageContent"],
+    [data-testid="stChatInput"] {
+        background-color: #FFFFFF !important;
+        color: #1E293B !important;
+    }
+    p, span, div, li, label {
+        color: #1E293B !important;
+    }
+}
+
 /* ---------------- App Background ---------------- */
 
 .stApp{
-    background:linear-gradient(135deg,#F8FAFC 0%,#EEF2FF 50%,#FFFFFF 100%);
-    color:#1E293B;
+    background:linear-gradient(135deg,#F8FAFC 0%,#EEF2FF 50%,#FFFFFF 100%) !important;
+    color:#1E293B !important;
 }
 
 /* ---------------- Hide Branding ---------------- */
@@ -138,6 +157,10 @@ h1{
     box-shadow:0 3px 10px rgba(0,0,0,.05);
 }
 
+[data-testid="stChatMessageContent"] p {
+    color:#111827 !important;
+}
+
 /* User Avatar */
 
 [data-testid="chatAvatarIcon-user"]{
@@ -158,6 +181,11 @@ h1{
     background:white !important;
     border:1px solid #CBD5E1 !important;
     border-radius:14px;
+}
+
+[data-testid="stChatInput"] textarea {
+    background:white !important;
+    color:#111827 !important;
 }
 
 [data-testid="stChatInput"]:focus-within{
@@ -226,7 +254,7 @@ code{
 db.init_db()   # creates tables if they don't exist (safe to call every run)
 
 # ══════════════════════════════════════════════════════════════════════════════
-# GOOGLE LOGIN GATE — NEW
+# GOOGLE LOGIN GATE
 # ══════════════════════════════════════════════════════════════════════════════
 if not st.user.is_logged_in:
     st.markdown(
@@ -282,7 +310,7 @@ with st.sidebar:
     st.title("🔍 NLP Insights")
     st.caption("Live analysis of the last message")
 
-    # ── Logged-in Google user card — NEW ────────────────────────────────────────
+    # ── Logged-in Google user card ──────────────────────────────────────────────
     st.markdown(
         f"""
         <div style="display:flex; align-items:center; gap:10px;
@@ -310,13 +338,9 @@ with st.sidebar:
 
     meta = st.session_state.nlp_meta
 
-    # ── Same as your original code ─────────────────────────────────────────────
     if meta:
-        # Intent — exactly as original
         st.metric("🎯 Intent", meta.get("intent", "—"))
 
-        # Sentiment — exactly as original
-        # NEW — adds emoji based on sentiment value
         sentiment_raw = meta.get("sentiment", "—")
 
         sentiment_emoji = {
@@ -327,17 +351,14 @@ with st.sidebar:
 
         st.metric("💬 Sentiment", f"{sentiment_emoji} {sentiment_raw}")
 
-        # Entities — exactly as original using format_entities_md
         st.markdown("**📌 Entities detected**")
         st.markdown(format_entities_md(meta.get("entities", [])))
 
     else:
-        # Info box — exactly as original
         st.info("Send a message to see NLP analysis here.")
 
     st.divider()
 
-    # Clear chat — MODIFIED: also clears DB-persisted messages for this conversation
     if st.button("🗑️ Clear chat", use_container_width=True):
         memory.clear_conversation(st.session_state.conversation_id)
         st.session_state.messages = []
@@ -346,12 +367,10 @@ with st.sidebar:
 
     st.divider()
 
-    # Model info expander
     with st.expander("🤗 Model Info"):
         for name, repo in get_model_info().items():
             st.code(f"{name}:\n{repo}", language=None)
 
-    # Device and model info — exactly as original
     st.markdown(
         f"**Model:** `{config.GROQ_MODEL}`  \n"
         f"**Device:** `{config.TORCH_DEVICE}`"
@@ -362,7 +381,6 @@ with st.sidebar:
 # MAIN CHAT AREA
 # ══════════════════════════════════════════════════════════════════════════════
 
-# ── Gradient title ─────────────────────────────────────────────────────────────
 st.markdown("# 🛍️ E-Commerce AI Chatbot")
 st.markdown(
     '<p style="color:rgba(148,163,184,0.6); font-size:0.88rem; '
@@ -373,7 +391,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ── Empty state suggestion cards ───────────────────────────────────────────────
 if not st.session_state.messages:
     st.markdown(
         """
@@ -411,13 +428,10 @@ if not st.session_state.messages:
         unsafe_allow_html=True,
     )
 
-# ── Render existing chat history — exactly as original ─────────────────────────
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# ── Chat input — MODIFIED: uses conversation_id (DB memory) instead of raw history,
-#    and persists both messages to PostgreSQL after the response ─────────────────
 if user_input := st.chat_input("Type your message…"):
 
     user_input = clean_text(user_input)
@@ -429,14 +443,13 @@ if user_input := st.chat_input("Type your message…"):
     with st.chat_message("assistant"):
         gen, nlp_meta = bot.process_stream(
             user_input,
-            st.session_state.conversation_id     # ← DB-backed context, not raw history
+            st.session_state.conversation_id
         )
         full_response = st.write_stream(gen)
 
     st.session_state.messages.append({"role": "assistant", "content": full_response})
     st.session_state.nlp_meta = nlp_meta
 
-    # Save this turn to PostgreSQL so it survives refresh/restart
     memory.save_turn(
         st.session_state.conversation_id,
         user_input,
