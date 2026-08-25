@@ -2,14 +2,11 @@
 config.py — Central configuration for all models and settings.
 Update HF_USERNAME and model repo names to match your HuggingFace uploads.
 """
-
 import os
 import torch
 from dataclasses import dataclass, field
 from dotenv import load_dotenv
-
 load_dotenv()
-
 
 # ── Auto-detect best available device ─────────────────────────────────────────
 def _get_device() -> str:
@@ -19,12 +16,10 @@ def _get_device() -> str:
         return "mps"
     return "cpu"
 
-
 def _pipeline_device() -> int:
     """transformers pipeline expects -1 for CPU, 0 for first GPU."""
     dev = _get_device()
     return 0 if dev in ("cuda", "mps") else -1
-
 
 def _secret(key: str, default: str = "") -> str:
     try:
@@ -34,7 +29,6 @@ def _secret(key: str, default: str = "") -> str:
         return os.getenv(key, default)
     except Exception:
         return os.getenv(key, default)
-
 
 @dataclass
 class Config:
@@ -52,8 +46,11 @@ class Config:
                                 "SENTIMENT_MODEL_ID", "dixitshashank937/sentiment-model"))
 
     # Groq
+    # ── FIXED: "llama-3.1-8b-instant" was deprecated by Groq — switched to
+    #    openai/gpt-oss-20b. Also now reads from secrets, so it can be
+    #    changed anytime without a code push — just update Streamlit secrets.
     GROQ_API_KEY:     str   = field(default_factory=lambda: _secret("GROQ_API_KEY", ""))
-    GROQ_MODEL:       str   = "llama-3.1-8b-instant"
+    GROQ_MODEL:       str   = field(default_factory=lambda: _secret("GROQ_MODEL", "openai/gpt-oss-20b"))
     GROQ_MAX_TOKENS:  int   = 1024
     GROQ_TEMPERATURE: float = 0.7
 
@@ -66,16 +63,10 @@ class Config:
     APP_TITLE:   str = "AI Powered Chatbot"
     APP_ICON:    str = "🤖"
     MAX_HISTORY: int = 20
-    
-    # ── ADD these lines to your existing src/config.py ─────────────────────────────
-    # Add this field inside your @dataclass Config class:
 
+    # Database
     DATABASE_URL: str = field(
         default_factory=lambda: _secret("DATABASE_URL", "")
     )
 
-    # ── That's the ONLY change needed in config.py ─────────────────────────────────
-    # Your existing _secret() function already reads from st.secrets/.env,
-    # so DATABASE_URL will work the same way as GROQ_API_KEY does.
-
-config = Config()    
+config = Config()

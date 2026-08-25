@@ -2,6 +2,7 @@ from groq import Groq
 import os
 import streamlit as st
 from typing import Generator
+from src.config import config   # ← single source of truth for model name
 
 
 def _get_api_key() -> str:
@@ -25,7 +26,7 @@ def generate_response(prompt: str) -> str:
     """Non-streaming — returns full response at once."""
     client = get_client()
     response = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
+        model=config.GROQ_MODEL,          # ← reads from config, not hardcoded
         messages=[{"role": "user", "content": prompt}],
         stream=False,
     )
@@ -41,18 +42,15 @@ def stream_response(
     Use with st.write_stream() in app.py.
     """
     client = get_client()
-
     full_messages = []
     if system_prompt:
         full_messages.append({"role": "system", "content": system_prompt})
     full_messages.extend(messages)
-
     stream = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
+        model=config.GROQ_MODEL,          # ← reads from config, not hardcoded
         messages=full_messages,
         stream=True,
     )
-
     for chunk in stream:
         delta = chunk.choices[0].delta.content
         if delta:
@@ -65,14 +63,12 @@ def get_response(
 ) -> str:
     """Non-streaming with full message history — used in chatbot.py."""
     client = get_client()
-
     full_messages = []
     if system_prompt:
         full_messages.append({"role": "system", "content": system_prompt})
     full_messages.extend(messages)
-
     response = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
+        model=config.GROQ_MODEL,          # ← reads from config, not hardcoded
         messages=full_messages,
         stream=False,
     )
