@@ -124,6 +124,126 @@ To develop a production-ready AI-powered conversational assistant for e-commerce
 
 ---
 
+## 📊 Model Performance & Evaluation Results
+
+The AI-Powered E-Commerce Chatbot uses multiple specialized transformer models for customer intent understanding, entity extraction, and sentiment analysis. Each model was evaluated independently using task-appropriate metrics.
+
+### 🔹 Overall Model Performance
+
+| Component | Model | Precision | Recall | F1-Score | Accuracy |
+|---|---|---:|---:|---:|---:|
+| Intent Classification | DistilBERT Base | ~99%+ | ~99%+ | **99.76%** | **99.76%** |
+| Named Entity Recognition | DistilBERT Base | **97.54%** | **99.82%** | **98.66%** | **99.92%** |
+| Sentiment Analysis | DeBERTa-v3 Base | **90.35%** | **89.20%** | **89.76%** | **94.37%** |
+| Response Generation | Groq-hosted LLM | — | — | — | Qualitative Evaluation |
+
+> **Note:** For Sentiment Analysis, Precision, Recall, and F1 represent **macro-average scores**.  
+> For NER, Precision, Recall, and F1 represent **micro-average entity-level results**.
+
+---
+
+## 🎯 Intent Classification Results
+
+The fine-tuned DistilBERT model performs intent classification across **27 customer-support intent categories**, including order tracking, refunds, cancellations, payments, account management, shipping, invoices, complaints, and customer-service requests.
+
+| Metric | Result |
+|---|---:|
+| Accuracy | **99.76%** |
+| F1-Score | **99.76%** |
+| Number of Intent Classes | **27** |
+| Evaluation Samples | **4,927** |
+
+The model demonstrates highly reliable intent recognition, enabling the chatbot to correctly route customer requests to the appropriate response-generation context.
+
+---
+
+## 🏷️ Named Entity Recognition Results
+
+The NER model extracts important structured information from customer queries such as order numbers, invoice numbers, delivery locations, refund amounts, names, and account information.
+
+### Overall NER Performance
+
+| Metric | Result |
+|---|---:|
+| Precision | **97.54%** |
+| Recall | **99.82%** |
+| F1-Score | **98.66%** |
+| Accuracy | **99.92%** |
+| Training Loss | **0.000536** |
+| Validation Loss | **0.001787** |
+| Evaluation Epoch | **5** |
+| Entity Instances | **2,775** |
+
+### Entity-Level Performance
+
+| Entity | Precision | Recall | F1-Score | Support |
+|---|---:|---:|---:|---:|
+| ACCOUNT_CATEGORY | 100.00% | 100.00% | 100.00% | 219 |
+| ACCOUNT_TYPE | 81.34% | 100.00% | 89.71% | 279 |
+| DELIVERY_CITY | 100.00% | 97.98% | 98.98% | 247 |
+| DELIVERY_COUNTRY | 97.13% | 100.00% | 98.54% | 169 |
+| INVOICE_NUMBER | 100.00% | 100.00% | 100.00% | 102 |
+| ORDER_NUMBER | 100.00% | 100.00% | 100.00% | 1,161 |
+| PERSON_NAME | 99.72% | 100.00% | 99.86% | 350 |
+| REFUND_AMOUNT | 100.00% | 100.00% | 100.00% | 248 |
+| **Micro Average** | **97.54%** | **99.82%** | **98.66%** | **2,775** |
+| **Macro Average** | **97.27%** | **99.75%** | **98.39%** | **2,775** |
+| **Weighted Average** | **97.91%** | **99.82%** | **98.77%** | **2,775** |
+
+The high recall of **99.82%** indicates that the system successfully identifies almost all relevant customer entities, which is particularly important for extracting order IDs, invoice numbers, delivery information, and refund-related details.
+
+---
+
+## 😊 Sentiment Analysis Results
+
+The DeBERTa-v3 model performs three-class sentiment classification:
+
+- Negative
+- Neutral
+- Positive
+
+### Overall Sentiment Performance
+
+| Metric | Result |
+|---|---:|
+| Accuracy | **94.37%** |
+| Macro Precision | **90.35%** |
+| Macro Recall | **89.20%** |
+| Macro F1-Score | **89.76%** |
+| Weighted Precision | **94.30%** |
+| Weighted Recall | **94.37%** |
+| Weighted F1-Score | **94.32%** |
+| Test Samples | **1,757** |
+
+### Class-Level Performance
+
+| Sentiment | Precision | Recall | F1-Score | Support |
+|---|---:|---:|---:|---:|
+| Negative | **96.61%** | **98.06%** | **97.33%** | 1,133 |
+| Neutral | **79.89%** | **77.37%** | **78.61%** | 190 |
+| Positive | **94.56%** | **92.17%** | **93.35%** | 434 |
+| **Macro Average** | **90.35%** | **89.20%** | **89.76%** | 1,757 |
+| **Weighted Average** | **94.30%** | **94.37%** | **94.32%** | 1,757 |
+
+The model performs particularly well for **Negative** and **Positive** customer feedback. The Neutral class remains comparatively more challenging because neutral reviews often contain a mixture of positive and negative expressions.
+
+---
+
+## 💼 Business Interpretation
+
+| Model Capability | Business Value |
+|---|---|
+| **Intent Classification** | Automatically identifies what the customer wants, enabling faster routing of refund, cancellation, payment, delivery, and account-related requests. |
+| **Named Entity Recognition** | Extracts structured information such as order IDs, invoice numbers, names, locations, and refund amounts, reducing the need for customers to repeatedly provide information. |
+| **Sentiment Analysis** | Helps identify dissatisfied customers and enables the system to adapt its response tone or prioritize negative interactions for human escalation. |
+| **LLM Response Generation** | Converts structured NLP outputs and conversation context into natural, personalized, and context-aware customer-support responses. |
+| **Conversation Metadata Storage** | Stored intents, sentiments, and entities can later be used for customer analytics, frequently asked query analysis, issue trends, and business intelligence. |
+
+### Key Takeaway
+
+The combination of **99.76% intent classification performance, 98.66% NER F1-score, and 94.37% sentiment accuracy** provides a strong NLP foundation for understanding customer requests before response generation. Instead of sending raw customer queries directly to an LLM, the system first extracts structured intent, entity, and sentiment information, enabling more controlled, context-aware, and business-relevant conversational responses.
+
+
 # 🏗️ System Architecture
 
 The chatbot follows a **modular multi-stage Natural Language Processing (NLP) pipeline**, where each model performs a specialized task before passing structured information to the next stage. This design enables accurate query understanding, contextual reasoning, and human-like response generation.
