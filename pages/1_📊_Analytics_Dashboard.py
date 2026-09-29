@@ -177,3 +177,119 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+# ══════════════════════════════════════════════════════════════════════════════
+# ADD this section to the END of your existing
+# pages/1_📊_Analytics_Dashboard.py file (after the "AI-Generated Business
+# Recommendations" section — everything above it stays exactly as is)
+# ══════════════════════════════════════════════════════════════════════════════
+
+st.divider()
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PER-CUSTOMER ANALYSIS — NEW SECTION
+# ══════════════════════════════════════════════════════════════════════════════
+st.header("👤 Individual Customer Analysis")
+st.caption("Drill into a specific customer's conversation history and sentiment pattern")
+
+customers = analytics.get_all_customers()
+
+if not customers:
+    st.info("No customer data available yet.")
+else:
+    # Build dropdown options: "Name (email) — 12 messages"
+    customer_labels = {
+        f"{c['name']} ({c['email']}) — {c['message_count']} msgs": c["user_id"]
+        for c in customers
+    }
+
+    selected_label = st.selectbox(
+        "Select a customer",
+        options=list(customer_labels.keys()),
+    )
+    selected_user_id = customer_labels[selected_label]
+    selected_customer = next(c for c in customers if c["user_id"] == selected_user_id)
+
+    # ── Customer summary stats ──────────────────────────────────────────────────
+    cust_stats = analytics.get_customer_summary_stats(selected_user_id)
+
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("💬 Total Messages", cust_stats["total_messages"])
+    c2.metric("🎯 Top Intent", cust_stats["dominant_intent"].replace("_", " ").title())
+
+    sentiment_emoji_map = {"POSITIVE": "😊", "NEGATIVE": "😟", "NEUTRAL": "😐"}
+    dom_sentiment = cust_stats["dominant_sentiment"]
+    c3.metric(
+        "Overall Sentiment",
+        f"{sentiment_emoji_map.get(dom_sentiment, '💬')} {dom_sentiment}"
+    )
+
+    if cust_stats["last_seen"]:
+        c4.metric("Last Active", cust_stats["last_seen"].strftime("%b %d, %Y"))
+    else:
+        c4.metric("Last Active", "—")
+
+    st.markdown("")
+
+    # ── This customer's intent + sentiment mini-charts ──────────────────────────
+    col_a, col_b = st.columns(2)
+
+    with col_a:
+        st.subheader(f"🎯 {selected_customer['name']}'s Intent History")
+        intent_bd = cust_stats.get("intent_breakdown", {})
+        if intent_bd:
+            df_ci = pd.DataFrame(list(intent_bd.items()), columns=["Intent", "Count"])
+            st.bar_chart(df_ci.set_index("Intent"))
+        else:
+            st.info("No intent data for this customer yet.")
+
+    with col_b:
+        st.subheader(f"💬 {selected_customer['name']}'s Sentiment History")
+        sentiment_bd = cust_stats.get("sentiment_breakdown", {})
+        if sentiment_bd:
+            df_cs = pd.DataFrame(list(sentiment_bd.items()), columns=["Sentiment", "Count"])
+            st.bar_chart(df_cs.set_index("Sentiment"))
+        else:
+            st.info("No sentiment data for this customer yet.")
+
+    # ── AI insight for this specific customer ───────────────────────────────────
+    st.subheader("💡 Support Team Insight")
+
+    customer_messages = analytics.get_customer_messages(selected_user_id, limit=50)
+    recent_user_texts = [
+        m["content"] for m in customer_messages if m["role"] == "user"
+    ][:5]
+
+    with st.spinner("Analyzing this customer's history..."):
+        insight = reco.generate_customer_insight(
+            selected_customer["name"],
+            cust_stats.get("intent_breakdown", {}),
+            cust_stats.get("sentiment_breakdown", {}),
+            recent_user_texts,
+        )
+
+    st.markdown(
+        f"""
+        <div style="background:#FEF3C7; border:1px solid #FDE68A; border-radius:14px;
+                    padding:1.2rem 1.5rem;">
+            {insight}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # ── Full message log table for this customer ────────────────────────────────
+    st.subheader(f"📜 Full Conversation Log — {selected_customer['name']}")
+
+    log_rows = []
+    for m in customer_messages:
+        log_rows.append({
+            "Time": m["created_at"].strftime("%Y-%m-%d %H:%M") if m["created_at"] else "—",
+            "Role": "🧑 Customer" if m["role"] == "user" else "🤖 Bot",
+            "Message": m["content"][:100] + ("..." if len(m["content"]) > 100 else ""),
+            "Intent": (m["intent"] or "—").replace("_", " ").title(),
+            "Sentiment": m["sentiment"] or "—",
+        })
+
+    df_log = pd.DataFrame(log_rows)
+    st.dataframe(df_log, use_container_width=True, hide_index=True, height=400)

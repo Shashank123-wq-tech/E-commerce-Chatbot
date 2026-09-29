@@ -174,3 +174,113 @@ def get_overview_stats(days: int = 30) -> dict:
         "positive_pct": positive_pct,
         "negative_pct": negative_pct,
     }
+    
+    
+# ══════════════════════════════════════════════════════════════════════════════
+# ADD these functions to the END of your existing src/analytics.py
+# (keep everything already in that file — this is additive)
+# ══════════════════════════════════════════════════════════════════════════════
+
+@st.cache_data(ttl=300, show_spinner=False)
+def get_all_customers() -> list[dict]:
+    """
+    Returns list of all customers who have chatted, for the dropdown selector:
+    [{"user_id": "...", "email": "...", "name": "...", "message_count": 12}, ...]
+    """
+    engine = get_engine()
+    with engine.begin() as conn:
+        rows = conn.execute(
+            text("""
+                SELECT u.id, u.email, u.name, COUNT(m.id) as msg_count
+                FROM users u
+                JOIN conversations c ON c.user_id = u.id
+                JOIN messages m ON m.conversation_id = c.id
+                GROUP BY u.id, u.email, u.name
+                ORDER BY msg_count DESC
+            """)
+        ).fetchall()
+
+    return [
+        {
+            "user_id": str(r[0]),
+            "email": r[1],
+            "name": r[2] or r[1].split("@")[0],
+            "message_count": r[3],
+        }
+        for r in rows
+    ]
+
+
+@st.cache_data(ttl=120, show_spinner=False)
+def get_customer_messages(user_id: str, limit: int = 200) -> list[dict]:
+    """
+    Returns every message (with NLP metadata) for ONE specific customer,
+    across all their conversations, newest first.
+    """
+    engine = get_engine()
+    with engine.begin() as conn:
+        rows = conn.execute(
+            text("""
+                SELECT m.role, m.content, m.intent, m.sentiment, m.entities, m.created_at
+                FROM messages m
+                JOIN conversations c ON c.id = m.conversation_id
+                WHERE c.user_id = :uid
+                ORDER BY m.created_at DESC
+                LIMIT :limit
+            """),
+            {"uid": user_id, "limit": limit}
+        ).fetchall()
+
+    result = []
+    for r in rows:
+        entities = r[4]
+        if isinstance(entities, str):
+            try:
+                entities = json.loads(entities)
+            except (json.JSONDecodeError, TypeError):
+                entities = []
+        result.append({
+            "role": r[0],
+            "content": r[1],
+            "intent": r[2],
+            "sentiment": r[3],
+            "entities": entities,
+            "created_at": r[5],
+        })
+    return result
+
+
+@st.cache_data(ttl=120, show_spinner=False)
+def get_customer_summary_stats(user_id: str) -> dict:
+    """
+    Returns high-level stats for one customer:
+    total messages, dominant sentiment, dominant intent, first/last seen.
+    """
+    messages = get_customer_messages(user_id, limit=1000)
+    assistant_msgs = [m for m in messages if m["role"] == "assistant" and m["intent"]]
+
+    if not assistant_msgs:
+        return {
+            "total_messages": len(messages),
+            "dominant_intent": "—",
+            "dominant_sentiment": "—",
+            "sentiment_score_avg": 0,
+            "first_seen": None,
+            "last_seen": None,
+        }
+
+    intent_counts = Counter(m["intent"] for m in assistant_msgs)
+    sentiment_labels = [m["sentiment"].split(" ")[0].upper() for m in assistant_msgs if m["sentiment"]]
+    sentiment_counts = Counter(sentiment_labels)
+
+    dates = [m["created_at"] for m in messages if m["created_at"]]
+
+    return {
+        "total_messages": len(messages),
+        "dominant_intent": intent_counts.most_common(1)[0][0] if intent_counts else "—",
+        "dominant_sentiment": sentiment_counts.most_common(1)[0][0] if sentiment_counts else "—",
+        "sentiment_breakdown": dict(sentiment_counts),
+        "intent_breakdown": dict(intent_counts),
+        "first_seen": min(dates) if dates else None,
+        "last_seen": max(dates) if dates else None,
+    }    

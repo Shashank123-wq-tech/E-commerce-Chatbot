@@ -56,3 +56,51 @@ first bullet point, no preamble."""
         stream=False,
     )
     return response.choices[0].message.content.strip()
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# ADD this function to the END of your existing src/recommendations.py
+# (keep everything already in that file — this is additive)
+# ══════════════════════════════════════════════════════════════════════════════
+
+@st.cache_data(ttl=900, show_spinner=False)
+def generate_customer_insight(
+    customer_name: str,
+    intent_breakdown: dict[str, int],
+    sentiment_breakdown: dict[str, int],
+    recent_messages: list[str],
+) -> str:
+    """
+    Returns a short, specific insight about ONE customer — used for
+    customer support teams to quickly understand a single user's situation.
+    """
+    if not intent_breakdown and not sentiment_breakdown:
+        return "_Not enough messages yet from this customer to generate an insight._"
+
+    intent_summary = ", ".join(f"{k}: {v}" for k, v in intent_breakdown.items())
+    sentiment_summary = ", ".join(f"{k}: {v}" for k, v in sentiment_breakdown.items())
+    recent_summary = "\n".join(f"- {m}" for m in recent_messages[:5])
+
+    prompt = f"""You are a customer support analyst. Here is data about ONE
+specific customer named {customer_name}:
+
+Intent history: {intent_summary}
+Sentiment history: {sentiment_summary}
+Recent messages:
+{recent_summary}
+
+Write a short 2-3 sentence insight for the support team about this specific
+customer: what they likely need, their emotional state, and one concrete
+next action the support team should take. Be specific and direct — no
+generic advice. Start directly with the insight, no preamble."""
+
+    client = get_client()
+    response = client.chat.completions.create(
+        model=config.GROQ_MODEL,
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=200,
+        temperature=0.4,
+        stream=False,
+    )
+    return response.choices[0].message.content.strip()
+
