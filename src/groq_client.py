@@ -26,9 +26,8 @@ def get_client() -> Groq:
 # Groq frequently deprecates/swaps free-tier models, so this makes the app
 # resilient instead of breaking completely when one model goes away.
 MODEL_FALLBACK_CHAIN = [
-    config.GROQ_MODEL,       # whatever is set in secrets/config (primary)
-    "qwen/qwen3.6-27b",
-    "qwen/qwen3.8-27b",
+    config.GROQ_MODEL,
+    "openai/gpt-oss-120b",
     "openai/gpt-oss-20b",
 ]
 

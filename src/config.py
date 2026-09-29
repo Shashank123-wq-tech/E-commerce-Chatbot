@@ -50,7 +50,7 @@ class Config:
     #    openai/gpt-oss-20b. Also now reads from secrets, so it can be
     #    changed anytime without a code push — just update Streamlit secrets.
     GROQ_API_KEY:     str   = field(default_factory=lambda: _secret("GROQ_API_KEY", ""))
-    GROQ_MODEL: str = field(default_factory=lambda: _secret("GROQ_MODEL", "qwen/qwen3.6-27b"))
+    GROQ_MODEL: str = field(default_factory=lambda: _secret("GROQ_MODEL", "openai/gpt-oss-120b"))
     GROQ_MAX_TOKENS:  int   = 1024
     GROQ_TEMPERATURE: float = 0.7
 
