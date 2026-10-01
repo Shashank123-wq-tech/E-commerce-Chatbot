@@ -30,7 +30,7 @@ An Intelligent Multi-Model Conversational AI System for Automated E-Commerce Cus
 
 <p align="center">
 
-### 🚀 Live Demo
+###  Live Demo
 
 ### https://e-commerce-chatbotdbewhjbfebfuewgfiw.streamlit.app
 
@@ -38,7 +38,7 @@ An Intelligent Multi-Model Conversational AI System for Automated E-Commerce Cus
 
 ---
 
-## 📌 Overview
+##  Overview
 
 Modern e-commerce platforms receive thousands of customer queries every day regarding **orders, refunds, cancellations, shipping, payments, returns, product information, and account-related issues**. Providing accurate, personalized, and timely support at scale remains one of the biggest challenges for online businesses.
 
@@ -50,23 +50,23 @@ Instead of relying on a single model, the chatbot follows a **multi-stage NLP pi
 
 The conversational pipeline integrates:
 
-- 🎯 **Intent Classification** using DistilBERT Base
-- 🏷️ **Named Entity Recognition (NER)** using DistilBERT Base
-- 😊 **Sentiment Analysis** using DeBERTa-v3 Base
-- 🧠 **Response Generation** using Groq's LLaMA-3.1-8B-Instant
-- 🌐 **Interactive Web Interface** using Streamlit
+-  **Intent Classification** using DistilBERT Base
+-  **Named Entity Recognition (NER)** using DistilBERT Base
+-  **Sentiment Analysis** using DeBERTa-v3 Base
+-  **Response Generation** using Groq's LLaMA-3.1-8B-Instant
+-  **Interactive Web Interface** using Streamlit
 
 The resulting system provides a scalable and modular architecture that improves customer support efficiency while enhancing the overall customer experience.
 
 ---
 
-# 🎯 Problem Statement
+#  Problem Statement
 
 E-commerce companies handle a large volume of customer support requests, while traditional rule-based chatbots often fail to accurately understand user intent, extract key information, recognize customer sentiment, and provide context-aware responses. This results in inefficient support, delayed issue resolution, and reduced customer satisfaction. This project addresses these challenges by integrating transformer-based NLP models with a Large Language Model to deliver intelligent, personalized, and efficient customer support.
 
 ---
 
-# 🎯 Goal
+#  Goal
 
 To develop a production-ready AI-powered conversational assistant for e-commerce customer support that leverages transformer-based Natural Language Processing models and a Large Language Model to automate customer interactions through intelligent query understanding, contextual information extraction, sentiment-aware analysis, and human-like response generation.
 
@@ -85,23 +85,23 @@ To develop a production-ready AI-powered conversational assistant for e-commerce
 
 ---
 
-# ✨ Key Features
+#  Key Features
 
 - 🤖 Intelligent conversational AI
-- 🎯 Transformer-based Intent Classification
-- 🏷️ Named Entity Recognition
-- 😊 Sentiment-aware conversations
-- 🧠 LLM-powered dynamic response generation
-- ⚡ Ultra-fast inference using Groq API
-- ☁️ Hugging Face model hosting
-- 🌐 Streamlit web application
-- 🔐 Secure environment variable management
-- 📦 Modular architecture
-- 🚀 Deployment-ready design
+-  Transformer-based Intent Classification
+-  Named Entity Recognition
+-  Sentiment-aware conversations
+-  LLM-powered dynamic response generation
+-  Ultra-fast inference using Groq API
+-  Hugging Face model hosting
+-  Streamlit web application
+-  Secure environment variable management
+-  Modular architecture
+-  Deployment-ready design
 
 ---
 
-# 📚 Table of Contents
+#  Table of Contents
 
 - Overview
 - Problem Statement
@@ -124,11 +124,11 @@ To develop a production-ready AI-powered conversational assistant for e-commerce
 
 ---
 
-## 📊 Model Performance & Evaluation Results
+##  Model Performance & Evaluation Results
 
 The AI-Powered E-Commerce Chatbot uses multiple specialized transformer models for customer intent understanding, entity extraction, and sentiment analysis. Each model was evaluated independently using task-appropriate metrics.
 
-### 🔹 Overall Model Performance
+###  Overall Model Performance
 
 | Component | Model | Precision | Recall | F1-Score | Accuracy |
 |---|---|---:|---:|---:|---:|
@@ -142,7 +142,7 @@ The AI-Powered E-Commerce Chatbot uses multiple specialized transformer models f
 
 ---
 
-## 🎯 Intent Classification Results
+##  Intent Classification Results
 
 The fine-tuned DistilBERT model performs intent classification across **27 customer-support intent categories**, including order tracking, refunds, cancellations, payments, account management, shipping, invoices, complaints, and customer-service requests.
 
@@ -157,7 +157,7 @@ The model demonstrates highly reliable intent recognition, enabling the chatbot 
 
 ---
 
-## 🏷️ Named Entity Recognition Results
+##  Named Entity Recognition Results
 
 The NER model extracts important structured information from customer queries such as order numbers, invoice numbers, delivery locations, refund amounts, names, and account information.
 
@@ -194,7 +194,7 @@ The high recall of **99.82%** indicates that the system successfully identifies 
 
 ---
 
-## 😊 Sentiment Analysis Results
+##  Sentiment Analysis Results
 
 The DeBERTa-v3 model performs three-class sentiment classification:
 
@@ -229,7 +229,7 @@ The model performs particularly well for **Negative** and **Positive** customer 
 
 ---
 
-## 💼 Business Interpretation
+##  Business Interpretation
 
 | Model Capability | Business Value |
 |---|---|
@@ -244,7 +244,7 @@ The model performs particularly well for **Negative** and **Positive** customer 
 The combination of **99.76% intent classification performance, 98.66% NER F1-score, and 94.37% sentiment accuracy** provides a strong NLP foundation for understanding customer requests before response generation. Instead of sending raw customer queries directly to an LLM, the system first extracts structured intent, entity, and sentiment information, enabling more controlled, context-aware, and business-relevant conversational responses.
 
 
-# 🏗️ System Architecture
+#  System Architecture
 
 The chatbot follows a **modular multi-stage Natural Language Processing (NLP) pipeline**, where each model performs a specialized task before passing structured information to the next stage. This design enables accurate query understanding, contextual reasoning, and human-like response generation.
 
@@ -253,19 +253,19 @@ flowchart LR
 
 A[👤 Customer Query]
 
-A --> B[🎯 Intent Classification<br>DistilBERT Base]
+A --> B[ Intent Classification<br>DistilBERT Base]
 
-B --> C[🏷️ Named Entity Recognition<br>DistilBERT Base]
+B --> C[ Named Entity Recognition<br>DistilBERT Base]
 
-C --> D[😊 Sentiment Analysis<br>DeBERTa-v3 Base]
+C --> D[ Sentiment Analysis<br>DeBERTa-v3 Base]
 
-D --> E[📝 Prompt Construction]
+D --> E[ Prompt Construction]
 
-E --> F[🧠 Groq LLaMA-3.1-8B-Instant]
+E --> F[ Groq LLaMA-3.1-8B-Instant]
 
-F --> G[💬 AI Generated Response]
+F --> G[ AI Generated Response]
 
-G --> H[🌐 Streamlit Interface]
+G --> H[ Streamlit Interface]
 
 ```
 
@@ -306,7 +306,7 @@ AI Generated Response
 
 ---
 
-# 🧠 AI Workflow
+#  AI Workflow
 
 ### Step 1 — Customer Query
 
@@ -442,7 +442,7 @@ The user experiences a seamless, conversational interaction similar to communica
 
 ---
 
-# 🤖 Machine Learning Models
+#  Machine Learning Models
 
 This project follows a **specialized multi-model architecture**, where each model is responsible for solving a specific Natural Language Processing task.
 
@@ -455,7 +455,7 @@ This project follows a **specialized multi-model architecture**, where each mode
 
 ---
 
-# 🎯 Intent Classification
+#  Intent Classification
 
 ### Model
 
@@ -484,7 +484,7 @@ The output of this model determines the direction of the remaining NLP pipeline.
 
 ---
 
-# 🏷️ Named Entity Recognition (NER)
+#  Named Entity Recognition (NER)
 
 ### Model
 
@@ -512,7 +512,7 @@ These extracted entities provide structured context for the LLM.
 
 ---
 
-# 😊 Sentiment Analysis
+#  Sentiment Analysis
 
 ### Model
 
@@ -534,7 +534,7 @@ By understanding customer sentiment, the chatbot produces more empathetic and co
 
 ---
 
-# 🧠 Response Generation
+#  Response Generation
 
 ### Model
 
@@ -555,7 +555,7 @@ and produces a coherent, personalized, and context-aware response.
 
 ---
 
-# 💡 Why a Multi-Model Architecture?
+#  Why a Multi-Model Architecture?
 
 Instead of relying on a single model to solve every task, this project separates Natural Language Understanding into specialized components.
 
@@ -574,7 +574,7 @@ This modular design closely resembles modern enterprise conversational AI system
 
 ---
 
-# ⚙️ Technology Stack
+#  Technology Stack
 
 The chatbot is built using a modern AI and web development stack that combines transformer-based NLP models, a Large Language Model (LLM), and a lightweight web interface.
 
@@ -637,7 +637,7 @@ The chatbot is built using a modern AI and web development stack that combines t
 
 ---
 
-# 📂 Project Structure
+#  Project Structure
 
 ```
 E-commerce-Chatbot/
@@ -670,7 +670,7 @@ E-commerce-Chatbot/
 
 ---
 
-# 🚀 Installation
+#  Installation
 
 ## 1. Clone the Repository
 
@@ -749,7 +749,7 @@ python-dotenv>=1.0.0
 
 ---
 
-# 🔐 Environment Variables
+#  Environment Variables
 
 Create a `.env` file in the project root directory.
 
@@ -763,7 +763,7 @@ HF_TOKEN=your_huggingface_access_token
 
 ---
 
-# 🤗 Hugging Face Model Hosting
+#  Hugging Face Model Hosting
 
 The fine-tuned transformer models used in this project are hosted on **Hugging Face Hub**.
 
@@ -782,7 +782,7 @@ The project loads the following models:
 
 ---
 
-# 🧠 Groq LLM Integration
+#  Groq LLM Integration
 
 The chatbot uses **Groq's LLaMA-3.1-8B-Instant** model for response generation.
 
@@ -797,7 +797,7 @@ and generates a context-aware, personalized response in real time.
 
 ---
 
-# ▶️ Running the Application
+#  Running the Application
 
 Launch the Streamlit application:
 
@@ -813,7 +813,7 @@ http://localhost:8501
 
 ---
 
-# 💻 How to Use
+#  How to Use
 
 ### Step 1
 
@@ -855,7 +855,7 @@ A personalized, context-aware response is generated and displayed in the Streaml
 
 ---
 
-# 🌐 Live Demo
+#  Live Demo
 
 The application is publicly deployed on **Streamlit Community Cloud**.
 
@@ -865,7 +865,7 @@ The application is publicly deployed on **Streamlit Community Cloud**.
 
 ---
 
-# ☁️ Deployment
+#  Deployment
 
 This project is deployment-ready and can be hosted on:
 
@@ -885,7 +885,7 @@ The current deployment uses:
 
 ---
 
-# 📸 Application Preview
+#  Application Preview
 
 > **Note:** Add screenshots of your application after deployment to showcase the user interface and chatbot workflow.
 
@@ -943,7 +943,7 @@ If your order has not been shipped yet, it is generally eligible for cancellatio
 
 ---
 
-# 🔍 Supported Customer Queries
+#  Supported Customer Queries
 
 The chatbot is designed to handle a wide variety of customer support requests commonly encountered in e-commerce platforms.
 
@@ -986,7 +986,7 @@ The chatbot is designed to handle a wide variety of customer support requests co
 
 ---
 
-# 🧩 Design Principles
+#  Design Principles
 
 This project was designed with a focus on modularity, scalability, and maintainability.
 
@@ -1016,7 +1016,7 @@ Sensitive credentials such as API keys are managed using environment variables v
 
 ---
 
-# 📌 Current Capabilities
+#  Current Capabilities
 
 ✔ Natural language understanding for customer queries
 
@@ -1036,7 +1036,7 @@ Sensitive credentials such as API keys are managed using environment variables v
 
 ---
 
-# 🚀 Future Enhancements
+#  Future Enhancements
 
 The current implementation provides a strong foundation for an intelligent customer support assistant. Future improvements may include:
 
@@ -1104,7 +1104,7 @@ Implement automated testing and deployment workflows using GitHub Actions.
 
 ---
 
-# 🤝 Contributing
+#  Contributing
 
 Contributions are welcome!
 
@@ -1135,7 +1135,7 @@ Please ensure that your contributions follow clean coding practices and include 
 
 ---
 
-# 💡 Learning Outcomes
+#  Learning Outcomes
 
 This project demonstrates practical implementation of:
 
@@ -1152,7 +1152,7 @@ This project demonstrates practical implementation of:
 
 ---
 
-# 📚 References
+#  References
 
 This project builds upon concepts and technologies from:
 
@@ -1167,7 +1167,7 @@ This project builds upon concepts and technologies from:
 
 ---
 
-# 🙏 Acknowledgements
+#  Acknowledgements
 
 Special thanks to the open-source AI community and the organizations that make modern AI development accessible:
 
@@ -1181,7 +1181,7 @@ Special thanks to the open-source AI community and the organizations that make m
 
 ---
 
-# 📄 License
+#  License
 
 This project is licensed under the **MIT License**.
 
@@ -1191,7 +1191,7 @@ For more details, see the **LICENSE** file in this repository.
 
 ---
 
-# 🔒 Security
+#  Security
 
 To protect sensitive credentials and ensure secure deployment:
 
@@ -1202,7 +1202,7 @@ To protect sensitive credentials and ensure secure deployment:
 
 ---
 
-# 📌 Repository Information
+#  Repository Information
 
 | Item | Details |
 |------|---------|
@@ -1220,7 +1220,7 @@ To protect sensitive credentials and ensure secure deployment:
 
 ---
 
-# 📈 Project Roadmap
+#  Project Roadmap
 
 The project will continue to evolve with additional features and improvements.
 
@@ -1251,7 +1251,7 @@ The project will continue to evolve with additional features and improvements.
 
 ---
 
-# 🛠️ Built With
+#  Built With
 
 This project was developed using the following technologies:
 
@@ -1269,7 +1269,7 @@ This project was developed using the following technologies:
 
 ---
 
-# 👨‍💻 Author
+#  Author
 
 ## Shashank Dixit
 
@@ -1306,7 +1306,7 @@ https://e-commerce-chatbotdbewhjbfebfuewgfiw.streamlit.app
 
 ---
 
-# 🤝 Connect & Feedback
+#  Connect & Feedback
 
 If you have suggestions, feedback, or ideas for improving this project, feel free to:
 
@@ -1319,7 +1319,7 @@ Constructive contributions and discussions are always welcome.
 
 ---
 
-# ⭐ Support the Project
+#  Support the Project
 
 If you found this project useful or learned something from it:
 
@@ -1332,7 +1332,7 @@ Your support helps motivate further development and encourages open-source colla
 
 ---
 
-# 📚 Final Notes
+#  Final Notes
 
 This project demonstrates the practical integration of multiple transformer-based NLP models with a Large Language Model to build an intelligent conversational AI system for e-commerce customer support.
 
