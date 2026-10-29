@@ -7,7 +7,7 @@
 </h1>
 
 <h3 align="center">
-An Intelligent Multi-Model Conversational AI System for Automated E-Commerce Customer Support
+An Intelligent Conversational AI LLM-Powered System for Automated E-Commerce Customer Support
 </h3>
 
 <p align="center">
